@@ -6,7 +6,6 @@
 
 language:
   - cpp
-  - node_js
   - java
 
 os: linux
@@ -32,24 +31,40 @@ jobs:
       python: '3.7'
       services:
         - docker
-      node_js:
-        - node
+      node_js: node
     - os: osx
+      addons:
+        homebrew:
+          # These are executables we need during the build.
+          # Because of Brew limitations regarding multiple architectures and
+          # redistributing installed libraries we don't use it for dependencies.
+          packages:
+            - git-lfs
+            - doxygen
+            - dylibbundler
+          #update: true
       env:
         - VULKAN_SDK_VER="1.2.176.1"
         # This is just to tell the install script where to install.
         - VULKAN_INSTALL_DIR="$HOME/VulkanSDK/$VULKAN_SDK_VER"
         - VULKAN_SDK="$VULKAN_INSTALL_DIR/macOS"
         - DEPLOY_BUILD_DIR=build-macos-universal
+        - MY_BUILD_ROOT=$HOME/build
+        - VCPKG_ROOT="$MY_BUILD_ROOT/vcpkg"
+        - VCPKG_INSTALL_ROOT="$MY_BUILD_ROOT/vcpkg_installed"
       compiler: clang
       osx_image: xcode12.4
+      cache:
+        directories:
+          #- $VCPKG_INSTALL_ROOT
+          - $HOME/.cache/vcpkg
 
 #env:
   #global:
 
 # Phase 1: Git clone - done automatically.
 # Phase 2: Install apt addons.
-# Phase 3: Install cache components - Currently not using a cache
+# Phase 3: Install cache components.
 # then the following phases:
 before_install:
 - echo "Running on the following travis CI runner"

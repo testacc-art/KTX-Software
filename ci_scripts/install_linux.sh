@@ -13,6 +13,8 @@ sudo apt-get -qq install libgl1-mesa-glx libgl1-mesa-dev
 sudo apt-get -qq install libvulkan1 libvulkan-dev
 sudo apt-get -qq install libassimp5 libassimp-dev
 sudo apt-get -qq install rpm
+sudo apt-get -qq install libopenimageio2.1 libopenimageio-dev
+sudo apt-get -qq install libopencolorio1v5 libopencolorio-dev
 
 wget -O - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
 sudo wget -O /etc/apt/sources.list.d/lunarg-vulkan-$VULKAN_SDK_VER-focal.list https://packages.lunarg.com/vulkan/$VULKAN_SDK_VER/lunarg-vulkan-$VULKAN_SDK_VER-focal.list

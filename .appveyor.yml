@@ -39,19 +39,31 @@ for:
         - image: Visual Studio 2015
     environment:
       CMAKE_GEN: Visual Studio 14 2015
+      VCPKG_FEATURE_FLAGS: binarycaching
+    cache:
+      - c:\Tools\vcpkg\archives
   - matrix:
       only:
         - image: Visual Studio 2017
     environment:
       CMAKE_GEN: Visual Studio 15 2017
+      VCPKG_FEATURE_FLAGS: binarycaching
+    cache:
+      - c:\Tools\vcpkg\archives
   - matrix:
       only:
         - image: Visual Studio 2019
     environment:
       CMAKE_GEN: Visual Studio 16 2019
+    cache:
+      # How to know when to invalidate, i.e. what to make a dependency?
+      # - '%LocalAppData%\vcpkg' dependency1, dependency2 ...
+      - '%LocalAppData%\vcpkg'
 
 build:
   verbosity: detailed
+
+#cache:
 
 # Following is for GIT_TRACE: 1 above.
 #on_failure:
@@ -73,40 +85,18 @@ init:
 # - ps: | #iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 # N.B.: for some reason indenting "- cmd" on the following lines causes syntax errors.
-# Not using PS for downloads because its curl is completely different.
 install:
-- if not "%appveyor_build_worker_image%" == "Visual Studio 2019" cinst doxygen.install
-#- ps: |
-    #run mkversion
-    #Update-AppveyorBuild -Version "$($env:ospsuite_version).$($env:appveyor_build_version)"
-- cmd: |
-    REM Download PowerVR OpenGL ES Emulator libraries (latest version).
-    md %OPENGL_ES_EMULATOR_WIN%
-    cd %OPENGL_ES_EMULATOR_WIN%
-    curl -L -O https://github.com/powervr-graphics/Native_SDK/raw/master/lib/Windows_x86_64/libGLES_CM.dll
-    curl -L -O https://github.com/powervr-graphics/Native_SDK/raw/master/lib/Windows_x86_64/libGLES_CM.lib
-    curl -L -O https://github.com/powervr-graphics/Native_SDK/raw/master/lib/Windows_x86_64/libGLESv2.dll
-    curl -L -O https://github.com/powervr-graphics/Native_SDK/raw/master/lib/Windows_x86_64/libGLESv2.lib
-    curl -L -O https://github.com/powervr-graphics/Native_SDK/raw/master/lib/Windows_x86_64/libEGL.dll
-    curl -L -O https://github.com/powervr-graphics/Native_SDK/raw/master/lib/Windows_x86_64/libEGL.lib
-    REM Install VulkanSDK
-    cd C:\
-    curl -o VulkanSDK-Installer.exe https://sdk.lunarg.com/sdk/download/%VULKAN_SDK_VER%/windows/VulkanSDK-%VULKAN_SDK_VER%-Installer.exe?Human=true
-    .\VulkanSDK-Installer.exe /S
-    REM refresh the environment to pick up VulkanSDK changes.
-    refreshenv
-    REM cd back to cloned repo.
-    cd C:\projects\ktx
-    REM Pull only Windows binaries.
-    git lfs pull --include=other_lib/win
+- ci_scripts\install_windows.bat
 # # One-line install/build zlib (for loadtests) into C:\Program Files\zlib
 # - ps: |
 #     Invoke-WebRequest -Uri https://raw.githubusercontent.com/horta/zlib.install/master/install.bat -OutFile install.bat
 #     ./install.bat
-#cache:
-#  - other_lib
+
 
 before_build:
+#- ps: |
+    #run mkversion
+    #Update-AppveyorBuild -Version "$($env:ospsuite_version).$($env:appveyor_build_version)"
 # Expand date keywords. -q is because the VS2019 image has a more
 # recent git version (2.21.0) in which git checkout writes to StdErr
 # which PS treats as an exception causing the build to fail, if checkout
@@ -114,14 +104,15 @@ before_build:
 # about the number of paths updated.
 - ps: |
     ./install-gitconfig.bat
+    echo "Pull only Windows binaries."
+    git lfs pull --include=other_lib/win
+    echo "Expand date keywords."
     rm TODO.md, lib/mainpage.md, pkgdoc/pages.md
     git checkout -q TODO.md lib/mainpage.md pkgdoc/pages.md
     git status
 
 build_script:
 - ps: |
-    # Pick up PATH changes made by Doxygen installer.
-    refreshenv
     $ErrorActionPreference = 'Stop'
     # Configure and build with SSE support (default).
     $env:KTX_BUILD_DIR = "$env:BUILD_DIR"
