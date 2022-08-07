@@ -20,36 +20,65 @@ on:
   # Allow manual trigger
   workflow_dispatch:
 
+#runs-on: windows-2019
 jobs:
-  windows-arm64:
-    runs-on: windows-latest
+  windows:
     strategy:
       matrix:
-        options: [
-          {config: 'Debug,Release', package: YES, tools: ON, docs: ON},
-        ]
+        include:
+          - os: windows-2019
+            generator: 'Visual Studio 16 2019'
+            options: [
+              {
+                config: 'Debug,Release',
+                docs: ON
+                jni: ON
+                loadtests: ON,
+                package: NO,
+                tools: ON,
+                sse: ON,
+                opencl: OFF,
+              },
+            ]
+          - os: windows-latest
+            generator: 'Visual Studio 17 2022'
+            options: [
+              # This is the configuration used for the release.
+              {config: 'Debug,Release', docs: ON, jni: ON, loadtests: ON, package: YES, tools: ON, sse: ON, opencl: OFF},
+              {config: Release, docs: OFF, jni: OFF, loadtests: OFF, package: NO, tools: OFF, sse: OFF, opencl: OFF},
+              {config: Release, docs: OFF, jni: OFF, loadtests: OFF, package: NO, tools: OFF, sse: ON, opencl: OFF},
+              {config: Release, docs: OFF, jni: OFF, loadtests: OFF, package: NO, tools: OFF, sse: OFF, opencl: OFF},
+            ]
+          - os: windows-latest
+            toolset: CLangCL
+            platform: arm64
+            # No tests on arm64 since the host is x64 and can't run the
+            # built tests
+            options: [
+              {config: 'Debug,Release', docs: ON, jni: OFF, loadtests: OFF, package: YES, tests: OFF, tools: ON},
+            ]
+    runs-on: ${{ matrix.os }}
     env:
       # Skip downloading necessities for the load tests and source and golden
       # images for the other tests since we can't run arm64 tests on the x64
       # build host.
       GIT_LFS_SKIP_SMUDGE: 1
 
-      BUILD_DIR: "build/build-batch-vs2022"
-      CONFIGURATION: "${{matrix.options.config}}"
-      CMAKE_GEN: "Visual Studio 17 2022" # Only VS version on Windows Server 2022
-      CMAKE_TOOLSET: "ClangCL"
+      BUILD_DIR: "build"
 
-      PACKAGE: ${{matrix.options.package}}
-      FEATURE_TOOLS: ${{matrix.options.tools}}
-      FEATURE_DOC: ${{matrix.options.docs}}
+      CMAKE_GEN: ${{ matrix.generator }}
+      PLATFORM: ${{ matrix.platform }}
+      CMAKE_TOOLSET: ${{ matrix.toolset }}
 
-      PLATFORM: "arm64"
-      SUPPORT_SSE: OFF
-
-      # No tests on arm64 since the host is x64 and can't run the built tests
-      FEATURE_JNI: OFF # Not sure of the state of JNI on arm64 windows
-      FEATURE_TESTS: OFF
-      FEATURE_LOADTESTS: OFF
+      CONFIGURATION: ${{matrix.options.config}}
+      FEATURE_DOC: ${{ matrix.options.docs }}
+      FEATURE_JNI: ${{ matrix.options.jni }}
+      FEATURE_LOADTESTS: ${{ matrix.options.loadtests }}
+      FEATURE_TESTS: ${{ matrix.options.tests }}
+      FEATURE_TOOLS: ${{ matrix.options.tools }}
+      PACKAGE: ${{ matrix.options.package }}
+      SUPPORT_OPENCL: ${{ matrix.options.opencl }}
+      SUPPORT_SSE: ${{ matrix.options.sse }}
 
       CERT_PK_PASS: ${{ secrets.CERT_PK_PASS }}
       CERT_DC_SECRET: ${{ secrets.CERT_DC_SECRET }}
