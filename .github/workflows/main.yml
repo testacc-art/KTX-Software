@@ -29,6 +29,7 @@ jobs:
         include:
           - os: windows-2019
             generator: 'Visual Studio 16 2019'
+            platform: x64
             options: [
               {config: 'Debug,Release',
                docs: ON, jni: ON, loadtests: ON, tools: ON,
@@ -37,6 +38,7 @@ jobs:
             ]
           - os: windows-latest
             generator: 'Visual Studio 17 2022'
+            platform: x64
             options: [
               # This is the configuration used for the release.
               {config: 'Debug,Release',
@@ -57,6 +59,7 @@ jobs:
                sse: OFF, opencl: OFF},
             ]
           - os: windows-latest
+            generator: 'Visual Studio 17 2022'
             toolset: CLangCL
             platform: arm64
             # No tests on arm64 since the host is x64 and can't run the
