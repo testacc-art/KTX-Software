@@ -25,20 +25,36 @@ jobs:
   windows:
     strategy:
       matrix:
+        os: [windows-2019, windows-latest]
         include:
           - os: windows-2019
             generator: 'Visual Studio 16 2019'
             options: [
-              {config: 'Debug,Release', docs: ON jni: ON loadtests: ON, package: NO, tools: ON, sse: ON, opencl: OFF},
+              {config: 'Debug,Release',
+               docs: ON, jni: ON, loadtests: ON, tools: ON,
+               package: NO,
+               sse: ON, opencl: OFF},
             ]
           - os: windows-latest
             generator: 'Visual Studio 17 2022'
             options: [
               # This is the configuration used for the release.
-              {config: 'Debug,Release', docs: ON, jni: ON, loadtests: ON, package: YES, tools: ON, sse: ON, opencl: OFF},
-              {config: Release, docs: OFF, jni: OFF, loadtests: OFF, package: NO, tools: OFF, sse: OFF, opencl: OFF},
-              {config: Release, docs: OFF, jni: OFF, loadtests: OFF, package: NO, tools: OFF, sse: ON, opencl: OFF},
-              {config: Release, docs: OFF, jni: OFF, loadtests: OFF, package: NO, tools: OFF, sse: OFF, opencl: OFF},
+              {config: 'Debug,Release',
+               docs: ON, jni: ON, loadtests: ON,tools: ON,
+               package: YES, 
+               sse: ON, opencl: OFF},
+              {config: Release,
+               docs: OFF, jni: OFF, loadtests: OFF, tools: OFF,
+               package: NO,
+               sse: OFF, opencl: OFF},
+              {config: Release,
+               docs: OFF, jni: OFF, loadtests: OFF, tools: OFF,
+               package: NO,
+               sse: ON, opencl: OFF},
+              {config: Release,
+               docs: OFF, jni: OFF, loadtests: OFF, tools: OFF,
+               package: NO,
+               sse: OFF, opencl: OFF},
             ]
           - os: windows-latest
             toolset: CLangCL
@@ -46,7 +62,9 @@ jobs:
             # No tests on arm64 since the host is x64 and can't run the
             # built tests
             options: [
-              {config: 'Debug,Release', docs: ON, jni: OFF, loadtests: OFF, package: YES, tests: OFF, tools: ON},
+              {config: 'Debug,Release',
+               docs: ON, jni: OFF, loadtests: OFF, tests: OFF, tools: ON,
+               package: YES},
             ]
     runs-on: ${{ matrix.os }}
     env:
