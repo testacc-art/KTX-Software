@@ -111,6 +111,13 @@ jobs:
       CERT_DC_SECRET: ${{ secrets.CERT_DC_SECRET }}
       CERT_DC_SALT: ${{ secrets.CERT_DC_SALT }}
 
+      OPENCL_SDK_HOME: https://github.com/intel/llvm/releases/download/2021-09
+      OPENCL_SDK_NAME: win-oclcpuexp-2021.12.9.0.24_rel
+      OPENGL_ES_EMULATOR: C:/Imagination/Windows_x86_64
+      OPENGL_ES_EMULATOR_WIN: C:\Imagination\Windows_x86_64
+      PVR_SDK_HOME: https://github.com/powervr-graphics/Native_SDK/raw/master/lib/Windows_x86_64/
+      VULKAN_SDK_VER: 1.2.176.1
+
     steps:
     - uses: actions/checkout@v3
       with:
