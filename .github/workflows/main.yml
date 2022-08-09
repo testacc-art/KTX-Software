@@ -26,19 +26,20 @@ jobs:
     strategy:
       matrix:
         os: [windows-2019, windows-latest]
-        generator: ['Visual Studio 16 2019', 'Visual Studio 17 2022']
         platform: [ x64 ]
         options: [
           {config: 'Debug,Release',
-           doc: ON, jni: ON, loadtests: ON, tools: ON,
+           doc: ON, jni: ON, loadtests: ON, tests: ON, tools: ON,
            package: NO,
            sse: ON, opencl: OFF},
         ]
-        exclude:
+        include:
           - os: windows-2019
-            generator: 'Visual Studio 17 2022'
-          - os: windows-latest
             generator: 'Visual Studio 16 2019'
+            toolset: v142
+          - os: windows-latest
+            generator: 'Visual Studio 17 2022'
+            toolset: v143
 #        include:
 #          - os: windows-2019
 #            generator: 'Visual Studio 16 2019'
@@ -94,14 +95,12 @@ jobs:
 
       CMAKE_GEN: ${{ matrix.generator }}
       PLATFORM: ${{ matrix.platform }}
-      if: ${{ matrix.toolset }}
       CMAKE_TOOLSET: ${{ matrix.toolset }}
 
       CONFIGURATION: ${{ matrix.options.config }}
       FEATURE_DOC: ${{ matrix.options.doc }}
       FEATURE_JNI: ${{ matrix.options.jni }}
       FEATURE_LOADTESTS: ${{ matrix.options.loadtests }}
-      if: ${{ matrix.options.tests }}
       FEATURE_TESTS: ${{ matrix.options.tests }}
       FEATURE_TOOLS: ${{ matrix.options.tools }}
       PACKAGE: ${{ matrix.options.package }}
