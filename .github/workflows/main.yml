@@ -27,10 +27,10 @@ jobs:
       matrix:
         os: [windows-2019, windows-latest]
         generator: ['Visual Studio 16 2019', 'Visual Studio 17 2022']
-        platform: x64
+        platform: [ x64 ]
         options: [
           {config: 'Debug,Release',
-           docs: ON, jni: ON, loadtests: ON, tools: ON,
+           doc: ON, jni: ON, loadtests: ON, tools: ON,
            package: NO,
            sse: ON, opencl: OFF},
         ]
@@ -45,7 +45,7 @@ jobs:
 #            platform: x64
 #            options: [
 #              {config: 'Debug,Release',
-#               docs: ON, jni: ON, loadtests: ON, tools: ON,
+#               doc: ON, jni: ON, loadtests: ON, tools: ON,
 #               package: NO,
 #               sse: ON, opencl: OFF},
 #            ]
@@ -55,19 +55,19 @@ jobs:
 #            options: [
 #              # This is the configuration used for the release.
 #              {config: 'Debug,Release',
-#               docs: ON, jni: ON, loadtests: ON, tools: ON,
+#               doc: ON, jni: ON, loadtests: ON, tools: ON,
 #               package: YES, 
 #               sse: ON, opencl: OFF},
 #              {config: Release,
-#               docs: OFF, jni: OFF, loadtests: OFF, tools: OFF,
+#               doc: OFF, jni: OFF, loadtests: OFF, tools: OFF,
 #               package: NO,
 #               sse: OFF, opencl: OFF},
 #              {config: Release,
-#               docs: OFF, jni: OFF, loadtests: OFF, tools: OFF,
+#               doc: OFF, jni: OFF, loadtests: OFF, tools: OFF,
 #               package: NO,
 #               sse: ON, opencl: OFF},
 #              {config: Release,
-#               docs: OFF, jni: OFF, loadtests: OFF, tools: OFF,
+#               doc: OFF, jni: OFF, loadtests: OFF, tools: OFF,
 #               package: NO,
 #               sse: OFF, opencl: OFF},
 #            ]
@@ -79,7 +79,7 @@ jobs:
 #            # built tests
 #            options: [
 #              {config: 'Debug,Release',
-#               docs: ON, jni: OFF, loadtests: OFF, tests: OFF, tools: ON,
+#               doc: ON, jni: OFF, loadtests: OFF, tests: OFF, tools: ON,
 #               package: YES},
 #            ]
 
@@ -98,9 +98,10 @@ jobs:
       CMAKE_TOOLSET: ${{ matrix.toolset }}
 
       CONFIGURATION: ${{ matrix.options.config }}
-      FEATURE_DOC: ${{ matrix.options.docs }}
+      FEATURE_DOC: ${{ matrix.options.doc }}
       FEATURE_JNI: ${{ matrix.options.jni }}
       FEATURE_LOADTESTS: ${{ matrix.options.loadtests }}
+      if: ${{ matrix.options.tests }}
       FEATURE_TESTS: ${{ matrix.options.tests }}
       FEATURE_TOOLS: ${{ matrix.options.tools }}
       PACKAGE: ${{ matrix.options.package }}
