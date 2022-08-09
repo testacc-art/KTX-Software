@@ -70,6 +70,11 @@ cmake . -G "$CMAKE_GEN" -A $PLATFORM $TOOLSET_OPTION -B $BUILD_DIR `
   -D WIN_CS_CERT_SEARCH_MACHINE_STORE=$WIN_CS_CERT_SEARCH_MACHINE_STORE `
   $(if ($need_gles_emulator) {"-D"}) $(if ($need_gles_emulator) {"OPENGL_ES_EMULATOR=$OPENGL_ES_EMULATOR"})
 
+# Return an error code if cmake config fails.
+if(!$?){
+  exit 1
+}
+
 $configArray = $CONFIGURATION.split(",")
 foreach ($config in $configArray) {
   pushd $BUILD_DIR
