@@ -152,8 +152,12 @@ jobs:
           echo "::set-output name=win_cs_cert_search_machine_store::'OFF'"
         }
 
+    - name: Install Dependencies
+      # This script only installs what's necessary for ON FEATURE_s.
+      run: cmd ci_scripts/install_win.bat
+
     - name: Build Windows
-      run: powershell ./ci_scripts/build_win.ps1
+      run: powershell ci_scripts/build_win.ps1
       env:
         WIN_CODE_SIGN_IDENTITY: ${{ steps.cert-import.outputs.win_code_sign_identity }}
         WIN_CS_CERT_SEARCH_MACHINE_STORE: ${{ steps.cert-import.outputs.win_cs_cert_search_machine_store }}
