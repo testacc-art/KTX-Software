@@ -26,49 +26,63 @@ jobs:
     strategy:
       matrix:
         os: [windows-2019, windows-latest]
-        include:
+        generator: ['Visual Studio 16 2019', 'Visual Studio 17 2022']
+        platform: x64
+        options: [
+          {config: 'Debug,Release',
+           docs: ON, jni: ON, loadtests: ON, tools: ON,
+           package: NO,
+           sse: ON, opencl: OFF},
+        ]
+        exclude:
           - os: windows-2019
+            generator: 'Visual Studio 17 2022'
+          - os: windows-latest
             generator: 'Visual Studio 16 2019'
-            platform: x64
-            options: [
-              {config: 'Debug,Release',
-               docs: ON, jni: ON, loadtests: ON, tools: ON,
-               package: NO,
-               sse: ON, opencl: OFF},
-            ]
-          - os: windows-latest
-            generator: 'Visual Studio 17 2022'
-            platform: x64
-            options: [
-              # This is the configuration used for the release.
-              {config: 'Debug,Release',
-               docs: ON, jni: ON, loadtests: ON,tools: ON,
-               package: YES, 
-               sse: ON, opencl: OFF},
-              {config: Release,
-               docs: OFF, jni: OFF, loadtests: OFF, tools: OFF,
-               package: NO,
-               sse: OFF, opencl: OFF},
-              {config: Release,
-               docs: OFF, jni: OFF, loadtests: OFF, tools: OFF,
-               package: NO,
-               sse: ON, opencl: OFF},
-              {config: Release,
-               docs: OFF, jni: OFF, loadtests: OFF, tools: OFF,
-               package: NO,
-               sse: OFF, opencl: OFF},
-            ]
-          - os: windows-latest
-            generator: 'Visual Studio 17 2022'
-            toolset: CLangCL
-            platform: arm64
-            # No tests on arm64 since the host is x64 and can't run the
-            # built tests
-            options: [
-              {config: 'Debug,Release',
-               docs: ON, jni: OFF, loadtests: OFF, tests: OFF, tools: ON,
-               package: YES},
-            ]
+#        include:
+#          - os: windows-2019
+#            generator: 'Visual Studio 16 2019'
+#            platform: x64
+#            options: [
+#              {config: 'Debug,Release',
+#               docs: ON, jni: ON, loadtests: ON, tools: ON,
+#               package: NO,
+#               sse: ON, opencl: OFF},
+#            ]
+#          - os: windows-latest
+#            generator: 'Visual Studio 17 2022'
+#            platform: x64
+#            options: [
+#              # This is the configuration used for the release.
+#              {config: 'Debug,Release',
+#               docs: ON, jni: ON, loadtests: ON, tools: ON,
+#               package: YES, 
+#               sse: ON, opencl: OFF},
+#              {config: Release,
+#               docs: OFF, jni: OFF, loadtests: OFF, tools: OFF,
+#               package: NO,
+#               sse: OFF, opencl: OFF},
+#              {config: Release,
+#               docs: OFF, jni: OFF, loadtests: OFF, tools: OFF,
+#               package: NO,
+#               sse: ON, opencl: OFF},
+#              {config: Release,
+#               docs: OFF, jni: OFF, loadtests: OFF, tools: OFF,
+#               package: NO,
+#               sse: OFF, opencl: OFF},
+#            ]
+#          - os: windows-latest
+#            generator: 'Visual Studio 17 2022'
+#            toolset: CLangCL
+#            platform: arm64
+#            # No tests on arm64 since the host is x64 and can't run the
+#            # built tests
+#            options: [
+#              {config: 'Debug,Release',
+#               docs: ON, jni: OFF, loadtests: OFF, tests: OFF, tools: ON,
+#               package: YES},
+#            ]
+
     runs-on: ${{ matrix.os }}
     env:
       # Skip downloading necessities for the load tests and source and golden
@@ -80,9 +94,10 @@ jobs:
 
       CMAKE_GEN: ${{ matrix.generator }}
       PLATFORM: ${{ matrix.platform }}
+      if: ${{ matrix.toolset }}
       CMAKE_TOOLSET: ${{ matrix.toolset }}
 
-      CONFIGURATION: ${{matrix.options.config}}
+      CONFIGURATION: ${{ matrix.options.config }}
       FEATURE_DOC: ${{ matrix.options.docs }}
       FEATURE_JNI: ${{ matrix.options.jni }}
       FEATURE_LOADTESTS: ${{ matrix.options.loadtests }}
@@ -137,7 +152,7 @@ jobs:
           echo "::set-output name=win_cs_cert_search_machine_store::'OFF'"
         }
 
-    - name: Build arm64 Windows
+    - name: Build Windows
       run: powershell ./ci_scripts/build_win.ps1
       env:
         WIN_CODE_SIGN_IDENTITY: ${{ steps.cert-import.outputs.win_code_sign_identity }}
