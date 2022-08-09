@@ -154,7 +154,7 @@ jobs:
 
     - name: Install Dependencies
       # This script only installs what's necessary for ON FEATURE_s.
-      run: cmd ci_scripts/install_win.bat
+      run: cmd.exe /C ci_scripts/install_win.bat
 
     - name: Build Windows
       run: powershell ci_scripts/build_win.ps1
