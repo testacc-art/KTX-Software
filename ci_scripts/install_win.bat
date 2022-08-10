@@ -38,7 +38,7 @@ if %FEATURE_LOADTESTS% == ON (
   @echo "After Vulkan install. errorLevel is %errorLevel%, VULKAN_SDK is %VULKAN_SDK%"
   dir C:\VulkanSDK
   @echo "refreshenv after Vulkan installation"
-  refreshenv
+  refreshenv.cmd
   @echo "VULKAN_SDK is %VULKAN_SDK%"
   @echo "Return to cloned repo."
   cd %curdir%
