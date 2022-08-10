@@ -36,6 +36,7 @@ if %FEATURE_LOADTESTS% == ON (
   curl -o VulkanSDK-Installer.exe https://sdk.lunarg.com/sdk/download/%VULKAN_SDK_VER%/windows/VulkanSDK-%VULKAN_SDK_VER%-Installer.exe?Human=true
   .\VulkanSDK-Installer.exe /S
   @echo "After Vulkan install. errorLevel is %errorLevel%, VULKAN_SDK is %VULKAN_SDK%"
+  dir C:\VulkanSDK
   @echo "refreshenv after Vulkan installation"
   refreshenv
   @echo "VULKAN_SDK is %VULKAN_SDK%"
