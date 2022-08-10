@@ -167,9 +167,11 @@ jobs:
         echo "Pick up environment changes made to registry by the install script."
         refreshenv
         echo "VULKAN_SDK is $env:VULKAN_SDK"
+        reg query "HKCU\Environment" /v VULKAN_SDK
 
     - name: Build Windows
       run: |
+        reg query "HKCU\Environment" /v VULKAN_SDK
         echo "VULKAN_SDK is $env:VULKAN_SDK"
         ci_scripts/build_win.ps1
       env:
