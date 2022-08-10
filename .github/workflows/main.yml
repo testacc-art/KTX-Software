@@ -161,7 +161,10 @@ jobs:
 
     - name: Install Dependencies
       # This script only installs what's necessary for ON FEATURE_s.
-      run: cmd.exe /C ci_scripts\install_win.bat
+      run: |
+        ci_scripts\install_win.bat
+        echo "Pick up environment changes made to registry by the install script."
+        refreshenv
 
     - name: Build Windows
       run: powershell ci_scripts/build_win.ps1
