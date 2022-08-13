@@ -130,15 +130,6 @@ jobs:
       if: github.ref_type == 'tag'
       run: git fetch -f origin ${{ github.ref }}:${{ github.ref }}
 
-    # Need doxygen if docs are supposed to be built
-    # Use the pre-installed `choco`. Although it's v1 it works. Do not
-    # do `uses: crazy-max/ghaction-chocolatey@v2` because it suffers
-    # frequent failures due to Chocolatey attempts to blackmail you
-    # into purchasing a license. If this does fail, re-run the build.
-    - name: Install Doxygen
-      if: matrix.options.docs == 'ON'
-      run: choco install doxygen.install
-
     - name: Install Certificate File Decryption Tool
       if: matrix.options.package == 'YES'
       run: iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
@@ -168,6 +159,15 @@ jobs:
         Update-SessionEnvironment
         echo "VULKAN_SDK is $env:VULKAN_SDK"
         reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v VULKAN_SDK
+
+    # Need doxygen if docs are supposed to be built
+    # Use the pre-installed `choco`. Although it's v1 it works. Do not
+    # do `uses: crazy-max/ghaction-chocolatey@v2` because it suffers
+    # frequent failures due to Chocolatey attempts to blackmail you
+    # into purchasing a license. If this does fail, re-run the build.
+    - name: Install Doxygen
+      if: matrix.options.docs == 'ON'
+      run: choco install doxygen.install
 
     - name: Build Windows
       run: |
