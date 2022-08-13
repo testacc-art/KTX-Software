@@ -156,7 +156,7 @@ jobs:
         ci_scripts/install_win.bat
         echo "VULKAN_SDK is $env:VULKAN_SDK"
         echo "Pick up environment changes made to registry by the install script."
-        Update-SessionEnvironment
+        refreshenv
         echo "VULKAN_SDK is $env:VULKAN_SDK"
         reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v VULKAN_SDK
 
