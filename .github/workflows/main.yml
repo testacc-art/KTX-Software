@@ -166,7 +166,7 @@ jobs:
     # frequent failures due to Chocolatey attempts to blackmail you
     # into purchasing a license. If this does fail, re-run the build.
     - name: Install Doxygen
-      if: matrix.options.docs == 'ON'
+      if: matrix.options.doc == 'ON'
       run: choco install doxygen.install
 
     - name: Build Windows
