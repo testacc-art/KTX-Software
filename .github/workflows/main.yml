@@ -172,9 +172,8 @@ jobs:
     - name: Build Windows
       run: |
         reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v VULKAN_SDK
-        refreshenv
         echo "VULKAN_SDK is $env:VULKAN_SDK"
-        ci_scripts/build_win.ps1
+        refreshenv && ci_scripts/build_win.ps1
       env:
         WIN_CODE_SIGN_IDENTITY: ${{ steps.cert-import.outputs.win_code_sign_identity }}
         WIN_CS_CERT_SEARCH_MACHINE_STORE: ${{ steps.cert-import.outputs.win_cs_cert_search_machine_store }}
