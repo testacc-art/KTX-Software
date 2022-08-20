@@ -111,6 +111,7 @@ jobs:
       CERT_DC_SECRET: ${{ secrets.CERT_DC_SECRET }}
       CERT_DC_SALT: ${{ secrets.CERT_DC_SALT }}
 
+      JAVA_HOME: ${{ JAVA_HOME_17_X64 }}
       OPENCL_SDK_HOME: https://github.com/intel/llvm/releases/download/2021-09
       OPENCL_SDK_NAME: win-oclcpuexp-2021.12.9.0.24_rel
       OPENGL_ES_EMULATOR: C:/Imagination/Windows_x86_64
@@ -163,13 +164,17 @@ jobs:
       # This script only installs what's necessary for ON FEATURE_s.
       run: |
         ci_scripts/install_win.bat
-        echo "VULKAN_SDK is $env:VULKAN_SDK"
         #echo "Pick up registry environment changes by the install script."
         #refreshenv
-        # refreshenv doesn't work either here or in a subsequent step.
+        # refreshenv doesn't work either here or in a subsequent step
+        # possibly because GitHub does not have Chocolatey's
+        # Update-SessionEnvironment installed so `refreshenv` is running
+        # Chocolatey's cmd.exe refreshenv command instead.
+        #
         # Subsequent steps also don't pick up the new environment from the
         # registry. Either all steps are run in the same shell or per-step
         # shells are forked from a parent powershell (PS) not the system.
+        #
         # We have to do some manual work. Fortunately only one of the current
         # installers sets an environment variable. All update $Path.
         # Again fortunately PS subshells take $Path from the system not
@@ -180,9 +185,8 @@ jobs:
 
     - name: Build Windows
       run: |
-        reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v VULKAN_SDK
-        echo "VULKAN_SDK is $env:VULKAN_SDK"
-        powershell ci_scripts/build_win.ps1
+        echo "JAVA_HOME=$JAVA_HOME"
+        ci_scripts/build_win.ps1
       env:
         WIN_CODE_SIGN_IDENTITY: ${{ steps.cert-import.outputs.win_code_sign_identity }}
         WIN_CS_CERT_SEARCH_MACHINE_STORE: ${{ steps.cert-import.outputs.win_cs_cert_search_machine_store }}
