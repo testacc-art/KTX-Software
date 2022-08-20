@@ -175,7 +175,8 @@ jobs:
         # Again fortunately PS subshells take $Path from the system not
         # their parent so all we have to care about here are new env. vars.
         $key='HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
-        (Get-ItemProperty -Path $key -Name VULKAN_SDK).VULKAN_SDK >> $env:GITHUB_ENV
+        $VULKAN_SDK=(Get-ItemProperty -Path $key -Name VULKAN_SDK).VULKAN_SDK
+        echo VULKAN_SDK=$VULKAN_SDK >> $env:GITHUB_ENV
 
     - name: Build Windows
       run: |
