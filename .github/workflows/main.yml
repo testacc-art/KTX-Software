@@ -111,7 +111,7 @@ jobs:
       CERT_DC_SECRET: ${{ secrets.CERT_DC_SECRET }}
       CERT_DC_SALT: ${{ secrets.CERT_DC_SALT }}
 
-      JAVA_HOME: $JAVA_HOME_17_X64
+      JAVA_HOME: ${{ env.JAVA_HOME_17_X64 }}
       OPENCL_SDK_HOME: https://github.com/intel/llvm/releases/download/2021-09
       OPENCL_SDK_NAME: win-oclcpuexp-2021.12.9.0.24_rel
       OPENGL_ES_EMULATOR: C:/Imagination/Windows_x86_64
