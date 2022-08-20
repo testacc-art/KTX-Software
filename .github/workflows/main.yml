@@ -182,12 +182,17 @@ jobs:
         $VULKAN_SDK=(Get-ItemProperty -Path $key -Name VULKAN_SDK).VULKAN_SDK
         echo VULKAN_SDK=$VULKAN_SDK >> $env:GITHUB_ENV
 
+    - name: Set up JDK 17.
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java_version: '17'
+
     - name: Build Windows
       run: |
         echo "JAVA_HOME=$env:JAVA_HOME"
         ci_scripts/build_win.ps1
       env:
-        JAVA_HOME: ${{ env.JAVA_HOME_17_X64 }}
         WIN_CODE_SIGN_IDENTITY: ${{ steps.cert-import.outputs.win_code_sign_identity }}
         WIN_CS_CERT_SEARCH_MACHINE_STORE: ${{ steps.cert-import.outputs.win_cs_cert_search_machine_store }}
 
