@@ -183,6 +183,7 @@ jobs:
         echo VULKAN_SDK=$VULKAN_SDK >> $env:GITHUB_ENV
 
     - name: Set up JDK 17.
+      if: matrix.options.jni == 'ON'
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
