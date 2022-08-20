@@ -164,16 +164,24 @@ jobs:
       run: |
         ci_scripts/install_win.bat
         echo "VULKAN_SDK is $env:VULKAN_SDK"
-        echo "Pick up environment changes made to registry by the install script."
-        refreshenv
-        echo "VULKAN_SDK is $env:VULKAN_SDK"
-        reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v VULKAN_SDK
+        #echo "Pick up registry environment changes by the install script."
+        #refreshenv
+        # refreshenv doesn't work either here or in a subsequent step.
+        # Subsequent steps also don't pick up the new environment from the
+        # registry. Either all steps are run in the same shell or per-step
+        # shells are forked from a parent powershell (PS) not the system.
+        # We have to do some manual work. Fortunately only one of the current
+        # installers sets an environment variable. All update $Path.
+        # Again fortunately PS subshells take $Path from the system not
+        # their parent so all we have to care about here are new env. vars.
+        $key='HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
+        (Get-ItemProperty -Path $key -Name VULKAN_SDK).VULKAN_SDK >> $env:GITHUB_ENV
 
     - name: Build Windows
       run: |
         reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v VULKAN_SDK
         echo "VULKAN_SDK is $env:VULKAN_SDK"
-        refreshenv && ci_scripts/build_win.ps1
+        powershell ci_scripts/build_win.ps1
       env:
         WIN_CODE_SIGN_IDENTITY: ${{ steps.cert-import.outputs.win_code_sign_identity }}
         WIN_CS_CERT_SEARCH_MACHINE_STORE: ${{ steps.cert-import.outputs.win_cs_cert_search_machine_store }}
