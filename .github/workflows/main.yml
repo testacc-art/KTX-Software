@@ -24,6 +24,7 @@ on:
 jobs:
   windows:
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-2019, windows-latest]
         platform: [ x64 ]
